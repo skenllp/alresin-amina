@@ -2,22 +2,31 @@
   'use strict';
   const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  /* Hero entrance */
+  /* Hero entrance (≈2.5s, driven by CSS once the artwork is ready) */
   const hero = document.getElementById('hero');
   const start = () => requestAnimationFrame(() => hero.classList.add('go'));
   const heroImg = hero.querySelector('.bg img');
-  if (heroImg.complete) start(); else { heroImg.addEventListener('load', start); heroImg.addEventListener('error', start); setTimeout(start, 2500); }
+  if (heroImg.complete) start();
+  else { heroImg.addEventListener('load', start); heroImg.addEventListener('error', start); setTimeout(start, 1200); }
 
-  /* Scroll reveals */
-  const targets = document.querySelectorAll('.invite, .event, .closing');
-  if ('IntersectionObserver' in window) {
-    const io = new IntersectionObserver(es => es.forEach(e => {
+  /* Scroll reveals: each text / floral element is observed on its own (works for tall sections on small phones).
+     Only opacity + translateY change; backgrounds are never animated. */
+  const items = document.querySelectorAll('.rv');
+  if (reduce || !('IntersectionObserver' in window)) {
+    items.forEach(el => el.classList.add('in'));
+  } else {
+    const io = new IntersectionObserver(entries => entries.forEach(e => {
       if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); }
-    }), { threshold: 0.18 });
-    targets.forEach(t => io.observe(t));
-  } else targets.forEach(t => t.classList.add('in'));
+    }), { threshold: 0.05, rootMargin: '0px 0px -6% 0px' });
+    items.forEach(el => io.observe(el));
+    /* safety net: never leave content hidden if the observer is delayed */
+    setTimeout(() => items.forEach(el => {
+      const r = el.getBoundingClientRect();
+      if (r.top < innerHeight && r.bottom > 0) el.classList.add('in');
+    }), 1500);
+  }
 
-  /* Light parallax (transform only) */
+  /* Light parallax (transform only, disabled for reduced motion) */
   const px = [...document.querySelectorAll('.px')];
   if (!reduce && px.length) {
     let tick = false;
@@ -86,4 +95,10 @@
     }
     window.open('https://wa.me/?text=' + encodeURIComponent(text + '\n' + url), '_blank', 'noopener');
   });
+
+  /* Deployment reminder: warn in the console if the Open Graph domain was not set */
+  const og = document.querySelector('meta[property="og:image"]');
+  if (og && /YOUR-DOMAIN/.test(og.content) && !/^(localhost|127\.|\[::1\])/.test(location.hostname)) {
+    console.warn('Open Graph URLs still contain YOUR-DOMAIN.com — replace it with your live https:// address.');
+  }
 })();
