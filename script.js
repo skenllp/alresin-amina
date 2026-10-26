@@ -2,12 +2,84 @@
   'use strict';
   const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  /* Hero entrance (≈2.5s, driven by CSS once the artwork is ready) */
+  /* Welcome screen, background music and hero start */
   const hero = document.getElementById('hero');
-  const start = () => requestAnimationFrame(() => hero.classList.add('go'));
-  const heroImg = hero.querySelector('.bg img');
-  if (heroImg.complete) start();
-  else { heroImg.addEventListener('load', start); heroImg.addEventListener('error', start); setTimeout(start, 1200); }
+  const welcome = document.getElementById('welcome');
+  const mainEl = document.querySelector('main');
+  const musicBtn = document.getElementById('music');
+  const root = document.documentElement;
+  const AUDIO_SRC = 'assets/wedding-music.mp3';
+  const VOLUME = 0.35;
+  let audio = null, musicOn = false, opened = false, resumeAfterHide = false, fadeTimer;
+
+  const startHero = () => requestAnimationFrame(() => hero.classList.add('go'));
+
+  const setMusicUI = () => {
+    musicBtn.classList.toggle('on', musicOn);
+    musicBtn.setAttribute('aria-pressed', String(musicOn));
+    musicBtn.setAttribute('aria-label', musicOn ? 'Mute music' : 'Play music');
+  };
+  const fadeIn = () => {
+    clearInterval(fadeTimer);
+    if (reduce) { audio.volume = VOLUME; return; }
+    let v = 0; audio.volume = 0;
+    fadeTimer = setInterval(() => {
+      v = Math.min(VOLUME, v + 0.025);
+      try { audio.volume = v; } catch (e) { /* iOS ignores volume */ }
+      if (v >= VOLUME) clearInterval(fadeTimer);
+    }, 80);
+  };
+  /* must run inside a click handler so browsers allow playback */
+  const playMusic = () => {
+    try {
+      if (!audio) {
+        audio = new Audio(AUDIO_SRC);
+        audio.loop = true;
+        audio.preload = 'auto';
+        audio.addEventListener('error', () => { musicOn = false; setMusicUI(); });
+      }
+      audio.muted = false;
+      const p = audio.play();
+      musicOn = true; setMusicUI();
+      if (p && typeof p.then === 'function') p.then(fadeIn).catch(() => { musicOn = false; setMusicUI(); });
+      else fadeIn();
+    } catch (e) { musicOn = false; setMusicUI(); }
+  };
+
+  musicBtn.addEventListener('click', () => {
+    if (musicOn) { if (audio) audio.muted = true; musicOn = false; setMusicUI(); }
+    else if (audio && !audio.paused) { audio.muted = false; musicOn = true; setMusicUI(); }
+    else playMusic();
+  });
+  document.addEventListener('visibilitychange', () => {
+    if (!audio) return;
+    if (document.hidden) { resumeAfterHide = !audio.paused; audio.pause(); }
+    else if (resumeAfterHide) { resumeAfterHide = false; audio.play().catch(() => {}); }
+  });
+
+  const openInvitation = withMusic => {
+    if (opened) return;
+    opened = true;
+    if (withMusic) playMusic(); else setMusicUI();   /* playback is requested here, inside the click */
+    musicBtn.hidden = false;
+    root.classList.remove('locked');
+    mainEl.inert = false;
+    window.scrollTo(0, 0);
+    startHero();
+    welcome.classList.add('closing');
+    hero.setAttribute('tabindex', '-1');
+    hero.focus({ preventScroll: true });
+    const done = () => welcome.remove();
+    if (reduce) done(); else setTimeout(done, 900);
+  };
+
+  if (welcome) {
+    root.classList.add('locked');
+    mainEl.inert = true;
+    document.getElementById('open-btn').addEventListener('click', () => openInvitation(true));
+    const first = document.getElementById('open-btn');
+    first.focus({ preventScroll: true });
+  } else { startHero(); }
 
   /* Scroll reveals: each text / floral element is observed on its own (works for tall sections on small phones).
      Only opacity + translateY change; backgrounds are never animated. */

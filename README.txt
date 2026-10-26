@@ -6,3 +6,5 @@ After redeploying, refresh WhatsApp's cached preview at https://developers.faceb
 
 Run locally:  python3 -m http.server 8000   then open http://localhost:8000
 Deploy: upload the whole folder (index.html, style.css, script.js, assets/).
+
+Music: assets/wedding-music.mp3 plays only after the guest taps "Open Invitation" (loops at ~35% volume). The round button at the bottom-right mutes/unmutes the music later.
