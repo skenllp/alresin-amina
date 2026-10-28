@@ -32,18 +32,14 @@
 <script>document.documentElement.className='js';</script>
 </head>
 <body>
-<!-- Welcome screen (shown once; removed after the guest opens the invitation) -->
+<!-- Welcome screen: minimal "tap to continue" splash (whole screen is the button) -->
 <div class="welcome" id="welcome" role="dialog" aria-modal="true" aria-labelledby="w-names">
-  <div class="w-stage">
-    <img class="w-arch" src="assets/opening-background.webp" width="941" height="1672" alt="" aria-hidden="true" fetchpriority="high">
-    <div class="w-content">
-      <img class="w-mono rise" src="assets/monogram.png" width="512" height="512" alt="A and A monogram" style="--d:.1s">
-      <p class="w-kicker rise" style="--d:.25s">A celebration of love and togetherness</p>
-      <h2 class="w-names rise" id="w-names" style="--d:.4s">Alresin &amp; Amina</h2>
-      <span class="rule rise" style="--d:.55s" aria-hidden="true"></span>
-      <button class="w-open rise" id="open-btn" type="button" style="--d:.7s">Open Invitation</button>
-    </div>
+  <div class="w-min">
+    <p class="w-bism rise" style="--d:.1s" lang="ar" dir="rtl">بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ</p>
+    <h2 class="w-names rise" id="w-names" style="--d:.4s"><span>Alresin</span><i>&amp;</i><span>Amina</span></h2>
+    <p class="w-date rise" style="--d:.7s">23 December 2026</p>
   </div>
+  <button class="w-tap rise" id="open-btn" type="button" style="--d:1.1s" aria-label="Tap to continue"><span>Tap to continue</span></button>
 </div>
 
 <button class="music" id="music" type="button" aria-label="Play music" aria-pressed="false" hidden>
