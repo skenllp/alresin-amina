@@ -32,14 +32,29 @@
 <script>document.documentElement.className='js';</script>
 </head>
 <body>
-<!-- Welcome screen: minimal "tap to continue" splash (whole screen is the button) -->
+<!-- Welcome screen: arch doors that slide apart when tapped -->
 <div class="welcome" id="welcome" role="dialog" aria-modal="true" aria-labelledby="w-names">
-  <div class="w-min">
-    <p class="w-bism rise" style="--d:.1s" lang="ar" dir="rtl">بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ</p>
-    <h2 class="w-names rise" id="w-names" style="--d:.4s"><span>Alresin</span><i>&amp;</i><span>Amina</span></h2>
-    <p class="w-date rise" style="--d:.7s">23 December 2026</p>
+  <div class="w-door l">
+    <div class="w-face">
+        <svg class="w-arch" viewBox="0 0 300 500" fill="none" stroke="currentColor" aria-hidden="true"><path d="M14 490V196C14 126 112 104 150 14C188 104 286 126 286 196V490Z" stroke-width="1.6"/><path d="M26 478V198C26 136 116 114 150 36C184 114 274 136 274 198V478Z" stroke-width=".8"/></svg>
+        <div class="w-text">
+          <p class="w-bism" lang="ar" dir="rtl">بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ</p>
+          <h2 class="w-names" id="w-names"><span>Alresin</span><i>&amp;</i><span>Amina</span></h2>
+          <p class="w-date">23 December 2026</p>
+        </div>
+      </div>
   </div>
-  <button class="w-tap rise" id="open-btn" type="button" style="--d:1.1s" aria-label="Tap to continue"><span>Tap to continue</span></button>
+  <div class="w-door r" aria-hidden="true">
+    <div class="w-face">
+        <svg class="w-arch" viewBox="0 0 300 500" fill="none" stroke="currentColor" aria-hidden="true"><path d="M14 490V196C14 126 112 104 150 14C188 104 286 126 286 196V490Z" stroke-width="1.6"/><path d="M26 478V198C26 136 116 114 150 36C184 114 274 136 274 198V478Z" stroke-width=".8"/></svg>
+        <div class="w-text">
+          <p class="w-bism" lang="ar" dir="rtl">بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ</p>
+          <h2 class="w-names"><span>Alresin</span><i>&amp;</i><span>Amina</span></h2>
+          <p class="w-date">23 December 2026</p>
+        </div>
+      </div>
+  </div>
+  <button class="w-tap" id="open-btn" type="button" aria-label="Tap to open the invitation"><span>Tap to open</span></button>
 </div>
 
 <button class="music" id="music" type="button" aria-label="Play music" aria-pressed="false" hidden>
